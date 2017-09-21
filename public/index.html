@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AISTL</title>
+    <script src="http://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <script src="http://cdn.bootcss.com/axios/0.16.2/axios.min.js"></script>
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid" id="app">
+    <div class="row">
+        <div class="col-md-12 col-xs-12 alert alert-success">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <h3>
+                        {{site.title}}
+                        <small>{{site.second_title}}</small>
+                    </h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-xs-8">
+                    <canvas id="canvas"></canvas>
+                </div>
+                <div class="">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon">游戏昵称：</span>
+                        <input type="text" class="form-control" v-model="nick" placeholder="nick_name">
+                        <span class="input-group-btn">
+                            <button v-on:click="join" type="button" class="btn btn-block btn-success">加入游戏</button>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row pre-scrollable">
+                <ul class="list-group">
+                    <div v-for="(item, ikey,index) in site.items">
+                        <li class="list-group-item">{{item}}</li>
+                    </div>
+                </ul>
+            </div>
+            <div class="col-md-12 col-xs-12 p-3">
+                <div class="col-md-4 col-xs-8"><strong>{{site.second_title}}</strong></div>
+                <div class="col-md-4 col-xs-8">ADDR:{{site.address}}</div>
+                <div class="col-md-4 col-xs-8">EMAIL:{{site.email}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+<script src="http://cdn.bootcss.com/socket.io/2.0.3/socket.io.js"></script>
+<script>
+
+    window.onload = function () {
+        var socket = io.connect('ws://' + document.domain + ':' + location.port);
+        var app = new Vue({
+            el: '#app',
+            data: {site: {}, nick: ""},
+            methods: {
+                update: function () {
+                    axios.get('/update')
+                        .then(function (response) {
+                            console.log(response.data);
+                            app.site = response.data;
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                },
+                join: function () {
+                    console.log(this.nick)
+                    socket.emit('login', {name: this.nick});
+                }
+            }
+        });
+        app.update();
+        var c = window.document.getElementById("canvas");
+        var h = 500, w = 800;
+        var balls = {}, new_balls = {};
+        c.setAttribute('width', w);
+        c.setAttribute('height', h);
+        g = c.getContext("2d");
+
+        function game_loop() {
+            g.clearRect(0, 0, w, h);
+            render();
+            requestAnimationFrame(game_loop);
+        }
+
+        game_loop();
+        //location.protocol +'ws://' + document.domain + ':' + location.port, transports = ['websocket', 'polling']
+        socket.on('game.aistl', function (res) {
+            new_balls = res["c"];
+        });
+
+        function lerp(min, max) {
+            return parseInt((max - min ) * 0.2 + min);
+        }
+
+        function render() {
+            for (var nb in new_balls) {
+                if(! (nb in balls))
+                {
+                    console.log("first");
+                    balls[nb]={"x":0,"y":0};
+                }
+                balls[nb].x = lerp(balls[nb].x, parseInt(new_balls[nb].x));
+                balls[nb].y = lerp(balls[nb].y, parseInt(new_balls[nb].y));
+                g.beginPath();
+                g.fillStyle = new_balls[nb].c;
+                g.lineWidth = 0;
+                g.arc(balls[nb].x, balls[nb].y, parseInt(new_balls[nb].r), 0, Math.PI * 2);
+                g.fill();
+                g.fillStyle = "white";
+                g.font = "20px Arial";
+                g.fillText(nb, balls[nb].x - parseInt(new_balls[nb].r) / 2, balls[nb].y + parseInt(new_balls[nb].r) / 2);
+                g.closePath();
+            }
+        }
+    }
+</script>
+</body>
+</html>
