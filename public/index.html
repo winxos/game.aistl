@@ -6,6 +6,7 @@
     <script src="http://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
     <script src="http://cdn.bootcss.com/axios/0.16.2/axios.min.js"></script>
     <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/bootstrap3-dialog/1.35.4/css/bootstrap-dialog.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container-fluid" id="app">
@@ -53,75 +54,8 @@
 </div>
 <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap3-dialog/1.35.4/js/bootstrap-dialog.min.js"></script>
 <script src="http://cdn.bootcss.com/socket.io/2.0.3/socket.io.js"></script>
-<script>
-
-    window.onload = function () {
-        var socket = io.connect('ws://' + document.domain + ':' + location.port);
-        var app = new Vue({
-            el: '#app',
-            data: {site: {}, nick: ""},
-            methods: {
-                update: function () {
-                    axios.get('/update')
-                        .then(function (response) {
-                            console.log(response.data);
-                            app.site = response.data;
-                        })
-                        .catch(function (err) {
-                            console.log(err);
-                        });
-                },
-                join: function () {
-                    console.log(this.nick)
-                    socket.emit('login', {name: this.nick});
-                }
-            }
-        });
-        app.update();
-        var c = window.document.getElementById("canvas");
-        var h = 500, w = 800;
-        var balls = {}, new_balls = {};
-        c.setAttribute('width', w);
-        c.setAttribute('height', h);
-        g = c.getContext("2d");
-
-        function game_loop() {
-            g.clearRect(0, 0, w, h);
-            render();
-            requestAnimationFrame(game_loop);
-        }
-
-        game_loop();
-        //location.protocol +'ws://' + document.domain + ':' + location.port, transports = ['websocket', 'polling']
-        socket.on('game.aistl', function (res) {
-            new_balls = res["c"];
-        });
-
-        function lerp(min, max) {
-            return parseInt((max - min ) * 0.2 + min);
-        }
-
-        function render() {
-            for (var nb in new_balls) {
-                if(! (nb in balls))
-                {
-                    balls[nb]={"x":0,"y":0};
-                }
-                balls[nb].x = lerp(balls[nb].x, parseInt(new_balls[nb].x));
-                balls[nb].y = lerp(balls[nb].y, parseInt(new_balls[nb].y));
-                g.beginPath();
-                g.fillStyle = new_balls[nb].c;
-                g.lineWidth = 0;
-                g.arc(balls[nb].x, balls[nb].y, parseInt(new_balls[nb].r), 0, Math.PI * 2);
-                g.fill();
-                g.fillStyle = "white";
-                g.font = "20px Arial";
-                g.fillText(nb, balls[nb].x - parseInt(new_balls[nb].r) / 2, balls[nb].y + parseInt(new_balls[nb].r) / 2);
-                g.closePath();
-            }
-        }
-    }
-</script>
+<script src="game.js"></script>
 </body>
 </html>

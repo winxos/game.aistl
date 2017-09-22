@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "dev": "node ./bin/www",
     "start": "pm2 start ./bin/www --watch"
   },
   "dependencies": {
@@ -13,8 +14,8 @@
     "jade": "~1.11.0",
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2",
-    "socketio":"latest",
+    "socketio": "latest",
     "github-webhook-handler": "^0.6.0",
-    "pm2":"latest"
+    "pm2": "latest"
   }
 }
