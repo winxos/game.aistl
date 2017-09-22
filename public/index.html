@@ -25,7 +25,7 @@
                 </div>
                 <div class="">
                     <div class="input-group input-group-lg">
-                        <span class="input-group-addon">游戏昵称：</span>
+                        <span class="input-group-addon">昵称：</span>
                         <input type="text" class="form-control" v-model="nick" placeholder="nick_name">
                         <span class="input-group-btn">
                             <button v-on:click="join" type="button" class="btn btn-block btn-success">加入游戏</button>
@@ -106,7 +106,6 @@
             for (var nb in new_balls) {
                 if(! (nb in balls))
                 {
-                    console.log("first");
                     balls[nb]={"x":0,"y":0};
                 }
                 balls[nb].x = lerp(balls[nb].x, parseInt(new_balls[nb].x));
