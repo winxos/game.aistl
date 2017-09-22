@@ -18,7 +18,6 @@ function game_init() {
     for (let i = 0; i < 4; i++) {
         add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50), parseInt(Math.random() * 25) + 2,i);
     }
-
 }
 
 game_init();
@@ -52,7 +51,6 @@ io.on('connect', function (socket) {
         {
             console.log("already had");
         }
-        console.log(objs);
     });
     socket.on('game.aistl', function (data) {
         console.log(data);
