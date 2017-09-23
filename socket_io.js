@@ -47,6 +47,7 @@ io.on('connect', function (socket) {
     }
 
     refresh_client();
+    socket.emit('online_user', Object.keys(objs["c"]));
     socket.on('login', function (data) {
         if (!add_c(parseInt(Math.random() * 200 + 50), parseInt(Math.random() * 200 + 50), 20, data["name"])) {
             socket.emit('login', 'false');
@@ -54,7 +55,14 @@ io.on('connect', function (socket) {
         }
         else {
             socket.emit('login', 'true');
+            console.log(data["name"] + " joined.");
+            socket.nickname = data["name"];
+            io.sockets.emit('online_user', Object.keys(objs["c"]));
         }
+    });
+    socket.on('disconnect', function (data) {
+        console.log(socket.nickname + " quit.");
+        delete objs["c"][socket.nickname]; //remove client
     });
     const speed = 2;
     socket.on('input', function (data) {

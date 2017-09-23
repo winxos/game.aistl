@@ -32,17 +32,17 @@
                             <button v-on:click="join" type="button" class="btn btn-block btn-success">加入游戏</button>
                         </span>
                     </div>
-
+                    在线用户列表：
+                    <div class="row pre-scrollable">
+                        <ul class="list-group">
+                            <div v-for="(item, ikey,index) in items">
+                                <li class="list-group-item">{{item}}</li>
+                            </div>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            <div class="row pre-scrollable">
-                <ul class="list-group">
-                    <div v-for="(item, ikey,index) in site.items">
-                        <li class="list-group-item">{{item}}</li>
-                    </div>
-                </ul>
-            </div>
             <div class="col-md-12 col-xs-12 p-3">
                 <div class="col-md-4 col-xs-8"><strong>{{site.second_title}}</strong></div>
                 <div class="col-md-4 col-xs-8">ADDR:{{site.address}}</div>

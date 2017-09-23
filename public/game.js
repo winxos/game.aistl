@@ -2,7 +2,7 @@ window.onload = function () {
     let socket = io.connect('ws://' + document.domain + ':' + location.port);
     let app = new Vue({
         el: '#app',
-        data: {site: {}, nick: ""},
+        data: {site: {}, items: {}, nick: ""},
         methods: {
             update: function () {
                 axios.get('/update')
@@ -68,6 +68,10 @@ window.onload = function () {
     });
     socket.on('game.aistl', function (res) {
         new_balls = res["c"];
+    });
+    socket.on('online_user', function (data) {
+        console.log("online" + data);
+        app.items = data;
     });
 
     function lerp(min, max) {
