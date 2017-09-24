@@ -1,5 +1,5 @@
 window.onload = function () {
-    let socket = io.connect('ws://' + document.domain + ':' + location.port);
+    let socket = io.connect('http://' + document.domain + ':' + location.port);
     let app = new Vue({
         el: '#app',
         data: {site: {}, items: {}, nick: "", join_disable: false},
@@ -15,8 +15,7 @@ window.onload = function () {
                     });
             },
             join: function () {
-                if(this.nick=="")
-                {
+                if (this.nick == "") {
                     BootstrapDialog.show({
                         size: BootstrapDialog.SIZE_SMALL,
                         title: '提示',
