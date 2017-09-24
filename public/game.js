@@ -2,7 +2,7 @@ window.onload = function () {
     let socket = io.connect('ws://' + document.domain + ':' + location.port);
     let app = new Vue({
         el: '#app',
-        data: {site: {}, items: {}, nick: ""},
+        data: {site: {}, items: {}, nick: "", join_disable: false},
         methods: {
             update: function () {
                 axios.get('/update')
@@ -15,6 +15,15 @@ window.onload = function () {
                     });
             },
             join: function () {
+                if(this.nick=="")
+                {
+                    BootstrapDialog.show({
+                        size: BootstrapDialog.SIZE_SMALL,
+                        title: '提示',
+                        message: '昵称为空,\n请输入昵称后再加入。'
+                    });
+                    return;
+                }
                 socket.emit('login', {name: this.nick});
             }
         }
@@ -36,7 +45,7 @@ window.onload = function () {
         }
     }, false);
     let c = window.document.getElementById("canvas");
-    let h = 500, w = 800;
+    let h = 400, w = 600;
     let balls = {}, new_balls = {};
     c.setAttribute('width', w);
     c.setAttribute('height', h);
@@ -64,6 +73,7 @@ window.onload = function () {
         }
         else {
             nick = app.nick;
+            app.join_disable = true;
         }
     });
     socket.on('game.aistl', function (res) {

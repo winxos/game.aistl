@@ -1,55 +1,18 @@
 var io = require('socket.io')();
-objs = {};
+var game = require('./game_server');
+game.game_init();
+game.game_update();
 
-function add_c(x, y, r, n) {
-    if (n in objs["c"]) return false;
-    objs["c"][n] = {
-        "x": x,
-        "y": y,
-        "r": r,
-        "vx": 0,
-        "vy": 0,
-        "c": "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")"
-    };
-    return true;
-}
-
-function game_init() {
-    objs["c"] = {};
-    for (let i = 0; i < 4; i++) {
-        add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50), parseInt(Math.random() * 25) + 2, i);
-    }
-}
-
-game_init();
-
-function game_update() {
-    for (let i in objs["c"]) {
-        objs["c"][i].x += objs["c"][i].vx;
-        objs["c"][i].y += objs["c"][i].vy;
-        if ((objs["c"][i].x - objs["c"][i].r) < 20 || (objs["c"][i].x + objs["c"][i].r) > 500) {
-            objs["c"][i].x -= objs["c"][i].vx;
-            objs["c"][i].vx = -objs["c"][i].vx;
-        }
-        if ((objs["c"][i].y - objs["c"][i].r) < 20 || (objs["c"][i].y + objs["c"][i].r) > 400) {
-            objs["c"][i].y -= objs["c"][i].vy;
-            objs["c"][i].vy = -objs["c"][i].vy;
-        }
-    }
-    setTimeout(game_update, 1000 / 60);
-}
-
-game_update();
 io.on('connect', function (socket) {
     function refresh_client() {
-        socket.emit('game.aistl', objs);
+        socket.emit('game.aistl', game.get_objs());
         setTimeout(refresh_client, 50);
     }
 
     refresh_client();
-    socket.emit('online_user', Object.keys(objs["c"]));
+    socket.emit('online_user', game.get_user());
     socket.on('login', function (data) {
-        if (!add_c(parseInt(Math.random() * 200 + 50), parseInt(Math.random() * 200 + 50), 20, data["name"])) {
+        if (!game.add_c(parseInt(Math.random() * 200 + 50), parseInt(Math.random() * 200 + 50), 20, data["name"])) {
             socket.emit('login', 'false');
             socket.send("false");
         }
@@ -57,34 +20,20 @@ io.on('connect', function (socket) {
             socket.emit('login', 'true');
             console.log(data["name"] + " joined.");
             socket.nickname = data["name"];
-            io.sockets.emit('online_user', Object.keys(objs["c"]));
+            io.sockets.emit('online_user', game.get_user());
         }
     });
     socket.on('disconnect', function (data) {
         console.log(socket.nickname + " quit.");
-        delete objs["c"][socket.nickname]; //remove client
+        game.remove_user(socket.nickname); //remove client
     });
-    const speed = 2;
+
     socket.on('input', function (data) {
         if ("keydown" in data) {
-            switch (data["keydown"]) {
-                case "left":
-                    objs["c"][data["nick"]].vx = -speed;
-                    break;
-                case "right":
-                    objs["c"][data["nick"]].vx = speed;
-                    break;
-                case "up":
-                    objs["c"][data["nick"]].vy = -speed;
-                    break;
-                case "down":
-                    objs["c"][data["nick"]].vy = speed;
-                    break;
-            }
+            game.control_user(data["nick"], data["keydown"])
         }
         if ("keyup" in data) {
-            objs["c"][data["nick"]].vx = 0;
-            objs["c"][data["nick"]].vy = 0;
+            game.control_user(data["nick"], "release");
         }
     });
 });

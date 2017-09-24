@@ -7,6 +7,11 @@
     <script src="http://cdn.bootcss.com/axios/0.16.2/axios.min.js"></script>
     <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://cdn.bootcss.com/bootstrap3-dialog/1.35.4/css/bootstrap-dialog.min.css" rel="stylesheet">
+    <style>
+        .list-group-item {
+            padding: 3px 10px
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid" id="app">
@@ -29,14 +34,14 @@
                         <span class="input-group-addon">昵称：</span>
                         <input type="text" class="form-control" v-model="nick" placeholder="nick_name">
                         <span class="input-group-btn">
-                            <button v-on:click="join" type="button" class="btn btn-block btn-success">加入游戏</button>
+                            <button v-on:click="join" :disabled="join_disable" type="button" class="btn btn-block btn-success">加入游戏</button>
                         </span>
                     </div>
                     在线用户列表：
                     <div class="row pre-scrollable">
                         <ul class="list-group">
                             <div v-for="(item, ikey,index) in items">
-                                <li class="list-group-item">{{item}}</li>
+                                <li class="list-group-item clearfix">{{item}}</li>
                             </div>
                         </ul>
                     </div>
