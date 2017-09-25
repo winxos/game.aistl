@@ -7,7 +7,7 @@ window.onload = function () {
             items: {},
             logs: {},
             nick: "",
-            msg:"",
+            msg: "",
             join_disable: false
         },
         methods: {
@@ -32,7 +32,7 @@ window.onload = function () {
                 }
                 socket.emit('login', {name: this.nick});
             },
-            send_msg:function () {
+            send_msg: function () {
                 if (this.msg != "") {
                     if (this.nick === "") {
                         BootstrapDialog.show({
@@ -44,6 +44,10 @@ window.onload = function () {
                     }
                     socket.emit('msg', {msg: this.msg});
                 }
+            },
+            scroll: function () {
+                let c = this.$el.querySelector("#logs_list");
+                c.scrollTop = c.scrollHeight;
             }
         }
     });
@@ -105,6 +109,7 @@ window.onload = function () {
     socket.on('logs', function (data) {
         console.log("logs" + data);
         app.logs = data;
+        app.scroll();
     });
 
     function lerp(min, max) {
