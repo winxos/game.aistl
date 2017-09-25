@@ -1,13 +1,13 @@
-var http = require('http');
-var createHandler = require('github-webhook-handler');
-var handler = createHandler({path: '/', secret: '112211'});
+let http = require('http');
+let createHandler = require('github-webhook-handler');
+let handler = createHandler({path: '/', secret: '112211'});
 
 // 上面的 secret 保持和 GitHub 后台设置的一致
 
 function run_cmd(cmd, args, callback) {
-    var spawn = require('child_process').spawn;
-    var child = spawn(cmd, args);
-    var resp = "";
+    let spawn = require('child_process').spawn;
+    let child = spawn(cmd, args);
+    let resp = "";
 
     child.stdout.on('data', function (buffer) {
         resp += buffer.toString();
@@ -18,7 +18,7 @@ function run_cmd(cmd, args, callback) {
 }
 
 http.createServer(function (req, res) {
-    handler(req, res, function (err) {
+    handler(req, res, function () {
         res.statusCode = 404;
         res.end('no such location')
     })

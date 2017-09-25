@@ -18,8 +18,8 @@ function add_c(x, y, r, n) {
 }
 
 function get_objs() {
-    r = {c: {}}
-    for (let d in objs["c"]) {
+    let r = {c: {}};
+    for (let d of Object.keys(objs["c"])) {
         r["c"][d] = {
             x: parseInt(objs["c"][d].x),
             y: parseInt(objs["c"][d].y),
@@ -70,7 +70,7 @@ function game_init() {
 }
 
 function game_update() {
-    for (let i in objs["c"]) {
+    for (let i of Object.keys(objs["c"])) {
         objs["c"][i].vx += objs["c"][i].ax;
         objs["c"][i].vy += objs["c"][i].ay;
         objs["c"][i].vx *= 1 - objs["c"][i].fr;

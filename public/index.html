@@ -34,7 +34,8 @@
                         <span class="input-group-addon">昵称：</span>
                         <input type="text" class="form-control" v-model="nick" placeholder="nick_name">
                         <span class="input-group-btn">
-                            <button v-on:click="join" :disabled="join_disable" type="button" class="btn btn-block btn-success">加入游戏</button>
+                            <button v-on:click="join" :disabled="join_disable" type="button"
+                                    class="btn btn-block btn-success">加入游戏</button>
                         </span>
                     </div>
                     在线用户列表：
@@ -42,6 +43,14 @@
                         <ul class="list-group">
                             <div v-for="(item, ikey,index) in items">
                                 <li class="list-group-item clearfix">{{item}}</li>
+                            </div>
+                        </ul>
+                    </div>
+                    世界消息：
+                    <div class="row pre-scrollable">
+                        <ul class="list-group">
+                            <div v-for="(log, ikey2,index2) in logs">
+                                <li class="list-group-item clearfix">{{log}}</li>
                             </div>
                         </ul>
                     </div>

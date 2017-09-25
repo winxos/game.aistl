@@ -2,7 +2,13 @@ window.onload = function () {
     let socket = io.connect('http://' + document.domain + ':' + location.port);
     let app = new Vue({
         el: '#app',
-        data: {site: {}, items: {}, nick: "", join_disable: false},
+        data: {
+            site: {},
+            items: {},
+            logs: {},
+            nick: "",
+            join_disable: false
+        },
         methods: {
             update: function () {
                 axios.get('/update')
@@ -15,7 +21,7 @@ window.onload = function () {
                     });
             },
             join: function () {
-                if (this.nick == "") {
+                if (this.nick === "") {
                     BootstrapDialog.show({
                         size: BootstrapDialog.SIZE_SMALL,
                         title: '提示',
@@ -29,7 +35,7 @@ window.onload = function () {
     });
     app.update();
     let keyBuf = {};
-    var nick = "";
+    let nick = "";
     const event_keys = {"37": "left", "39": "right", "38": "up", "40": "down"};
     addEventListener("keydown", (e) => {
         keyBuf[e.keyCode] = true;
@@ -63,7 +69,7 @@ window.onload = function () {
 
     game_loop();
     socket.on('login', function (res) {
-        if (res == "false") {
+        if (res === "false") {
             BootstrapDialog.show({
                 size: BootstrapDialog.SIZE_SMALL,
                 title: '加入失败',
@@ -81,6 +87,10 @@ window.onload = function () {
     socket.on('online_user', function (data) {
         console.log("online" + data);
         app.items = data;
+    });
+    socket.on('logs', function (data) {
+        console.log("logs" + data);
+        app.logs = data;
     });
 
     function lerp(min, max) {
