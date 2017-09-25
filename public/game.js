@@ -7,6 +7,7 @@ window.onload = function () {
             items: {},
             logs: {},
             nick: "",
+            msg:"",
             join_disable: false
         },
         methods: {
@@ -30,6 +31,19 @@ window.onload = function () {
                     return;
                 }
                 socket.emit('login', {name: this.nick});
+            },
+            send_msg:function () {
+                if (this.msg != "") {
+                    if (this.nick === "") {
+                        BootstrapDialog.show({
+                            size: BootstrapDialog.SIZE_SMALL,
+                            title: '提示',
+                            message: '请先加入游戏！'
+                        });
+                        return;
+                    }
+                    socket.emit('msg', {msg: this.msg});
+                }
             }
         }
     });

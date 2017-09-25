@@ -59,6 +59,14 @@
                             </div>
                         </ul>
                     </div>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon">输入内容：</span>
+                        <input type="text" class="form-control" v-model="msg" placeholder="hello">
+                        <span class="input-group-btn">
+                            <button v-on:click="send_msg" type="button"
+                                    class="btn btn-block btn-success">发送</button>
+                        </span>
+                    </div>
                 </div>
             </div>
 
