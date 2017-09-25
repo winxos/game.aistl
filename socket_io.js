@@ -19,8 +19,15 @@ function refresh_client() {
 
 refresh_client();
 
+function getClientIp(req) {
+    return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+};
+
 function add_log(s) {
-    logs.push([moment(Date.now()).format('YYYY-MM-DD hhmmss: ') + s]);
+    logs.push(moment(Date.now()).format('YYYY-MM-DD hh:mm:ss> ') + s);
     console.log(logs);
     io.sockets.emit('logs', logs);
 }
@@ -31,7 +38,7 @@ io.on('connect', function (socket) {
     socket.emit('online_user', game.get_user());
     socket.emit('game.aistl', game.get_objs());
     socket.emit('logs', logs);
-
+    socket.nickname="";
     socket.on('login', function (data) {
         if (!game.add_c(parseInt(Math.random() * 200 + 50), parseInt(Math.random() * 200 + 50), 20, data["name"])) {
             socket.emit('login', 'false');
@@ -41,13 +48,16 @@ io.on('connect', function (socket) {
             socket.emit('login', 'true');
             socket.nickname = data["name"];
             io.sockets.emit('online_user', game.get_user());
-            add_log(data["name"] + " joined.");
+            add_log(data["name"] + " joined. IP:" + socket.request.connection.remoteAddress);
         }
     });
     socket.on('disconnect', function () {
-        console.log(socket.nickname + " quit.");
-        add_log(socket.nickname + " quit.");
-        game.remove_user(socket.nickname); //remove client
+        if(socket.nickname!="")
+        {
+            console.log(socket.nickname + " quit.");
+            add_log(socket.nickname + " quit.");
+            game.remove_user(socket.nickname); //remove client
+        }
     });
 
     socket.on('input', function (data) {

@@ -1,4 +1,4 @@
-objs = {};
+let objs = {};
 const speed = 0.5;
 
 function add_c(x, y, r, n) {
