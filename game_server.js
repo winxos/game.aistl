@@ -1,5 +1,6 @@
 objs = {};
 const speed = 0.5;
+
 function add_c(x, y, r, n) {
     if (n in objs["c"]) return false;
     objs["c"][n] = {
@@ -15,15 +16,26 @@ function add_c(x, y, r, n) {
     };
     return true;
 }
-function get_objs()
-{
-    return objs;
+
+function get_objs() {
+    r = {c: {}}
+    for (let d in objs["c"]) {
+        r["c"][d] = {
+            x: parseInt(objs["c"][d].x),
+            y: parseInt(objs["c"][d].y),
+            r: parseInt(objs["c"][d].r),
+            c: objs["c"][d].c
+        }
+    }
+    return r;
 }
-function  get_user() {
+
+function get_user() {
     return Object.keys(objs["c"]);
 }
+
 function remove_user(n) {
-    if(n in objs["c"]){
+    if (n in objs["c"]) {
         delete objs["c"][n];
         return true;
     }
@@ -52,7 +64,7 @@ function control_user(n, e) {
 
 function game_init() {
     objs["c"] = {};
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 1; i++) {
         add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50), parseInt(Math.random() * 25) + 2, i);
     }
 }
@@ -78,5 +90,5 @@ function game_update() {
 }
 
 module.exports = {
-    add_c, game_init, game_update,remove_user,control_user,get_objs,get_user
+    add_c, game_init, game_update, remove_user, control_user, get_objs, get_user
 };

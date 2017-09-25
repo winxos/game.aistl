@@ -1,11 +1,19 @@
 var io = require('socket.io')();
 var game = require('./game_server');
+var _ = require('lodash'); //for deep clone, default installed
+var _de = require('deep-equal'); //deep equal , npm install deep-equal
 game.game_init();
 game.game_update();
 
 io.on('connect', function (socket) {
+    let old_obj = {};
+
     function refresh_client() {
-        socket.emit('game.aistl', game.get_objs());
+        let t = game.get_objs();
+        if (!_de(old_obj, t)) {//deep equal
+            socket.emit('game.aistl', t);
+            old_obj = _.cloneDeep(t); //deep clone
+        }
         setTimeout(refresh_client, 50);
     }
 
