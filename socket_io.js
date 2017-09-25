@@ -48,7 +48,7 @@ io.on('connect', function (socket) {
             socket.emit('login', 'true');
             socket.nickname = data["name"];
             io.sockets.emit('online_user', game.get_user());
-            add_log(data["name"] + " joined. IP:" + socket.request.connection.remoteAddress);
+            add_log(data["name"] + " joined. IP:" + socket.handshake.headers['x-forwarded-for']);
         }
     });
     socket.on('disconnect', function () {
