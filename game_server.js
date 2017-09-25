@@ -64,7 +64,7 @@ function control_user(n, e) {
 
 function game_init() {
     objs["c"] = {};
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 5; i++) {
         add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50), parseInt(Math.random() * 25) + 2, i);
     }
 }

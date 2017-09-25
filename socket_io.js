@@ -30,6 +30,7 @@ io.on('connect', function (socket) {
 
     socket.emit('online_user', game.get_user());
     socket.emit('game.aistl', game.get_objs());
+    socket.emit('logs', logs);
 
     socket.on('login', function (data) {
         if (!game.add_c(parseInt(Math.random() * 200 + 50), parseInt(Math.random() * 200 + 50), 20, data["name"])) {
