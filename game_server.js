@@ -149,6 +149,12 @@ function born(key) {
         b.y = b.y + Math.random() * b.r;
         b.vx = 0;
         b.vy = 0;
+        online_user[key]["area"] = b.r * b.r;
+        if (b.r < 5) {
+            online_user[key]["is_alive"] = false;
+            delete b;
+            return;
+        }
         for (let i = 0; i < 10; i++) {
             if (add_c(b.x + Math.random() * b.r * 4, b.y + Math.random() * b.r * 4, b.r / 1.4, key + "2", 0, 0)) {
                 break;
