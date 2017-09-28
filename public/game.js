@@ -43,6 +43,7 @@ window.onload = function () {
                         return;
                     }
                     socket.emit('msg', {msg: this.msg});
+                    this.msg = "";
                 }
             },
             scroll: function () {
