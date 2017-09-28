@@ -1,24 +1,38 @@
 let objs = {};
 let online_user = {};
 
-function add_c(x, y, r, n, is_player = false) {
+function add_c(x, y, r, n, is_player = false, is_super_ball = false,
+               vx = parseInt(Math.random() * 6 - 3), vy = parseInt(Math.random() * 6 - 3)) {
     if (n in objs["c"]) return false;
     let tmp = {
         "x": x,
         "y": y,
         "r": r,
-        "vx": 0,
-        "vy": 0,
+        "vx": vx,
+        "vy": vy,
         "ax": 0,
         "ay": 0,
-        'fr': 0.05,
+        "fr": 0.001,
+        "is_hit": false,
         "is_player": is_player,
+        "is_super_ball": is_super_ball,
         "c": "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")"
     };
     for (let b of Object.keys(objs["c"])) {
         if (is_ball_hit_ball(objs["c"][b], tmp)) {
             return false;
         }
+    }
+    if (is_super_ball) {
+        tmp.fr = 0;
+        tmp.vx = 3;
+        tmp.vy = 3;
+        tmp.c = "black";
+    }
+    else if (is_player) {
+        tmp.vx = 0;
+        tmp.vy = 0;
+        tmp.fr = 0.05;
     }
     objs["c"][n] = tmp;
     return true;
@@ -96,6 +110,8 @@ function control_user(n, e) {
 
 function game_init() {
     objs["c"] = {};
+    add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50),
+        3, ".", false, true);
 }
 
 function check_hit_boarder(b) {
@@ -121,6 +137,40 @@ function body_update(b) {
     b.vy *= 1 - b.fr;
     b.x += b.vx;
     b.y += b.vy;
+
+}
+
+function born(key) {
+    b = objs["c"][key];
+    b.is_hit = false;
+    if (b.is_player) {
+        b.r = b.r / 1.4;
+        b.x = b.x + Math.random() * b.r;
+        b.y = b.y + Math.random() * b.r;
+        b.vx = 0;
+        b.vy = 0;
+        for (let i = 0; i < 10; i++) {
+            if (add_c(b.x + Math.random() * b.r * 4, b.y + Math.random() * b.r * 4, b.r / 1.4, key + "2", 0, 0)) {
+                break;
+            }
+        }
+    }
+    else {
+        if (b.r > 5) {
+            for (let i = 0; i < 10; i++) {
+                if (add_c(b.x + Math.random() * b.r * 4, b.y + Math.random() * b.r * 4, b.r / 1.4, key + "1", 0, 0)) {
+                    break;
+                }
+            }
+            for (let i = 0; i < 10; i++) {
+                if (add_c(b.x + Math.random() * b.r * 4, b.y + Math.random() * b.r * 4, b.r / 1.4, key + "2", 0, 0)) {
+                    break;
+                }
+            }
+        }
+
+        delete b;
+    }
 }
 
 function game_update() {
@@ -128,11 +178,28 @@ function game_update() {
         body_update(objs["c"][i]);
         check_hit_boarder(objs["c"][i]);
     }
+    for (let i of Object.keys(objs["c"])) {
+        if (objs["c"][i].is_hit) {
+            born(i);
+        }
+    }
     let c_keys = Object.keys(objs["c"]);
     for (let i = 0; i < c_keys.length - 1; i++) {
         for (let j = i + 1; j < c_keys.length; j++) {
             let a = objs["c"][c_keys[i]], b = objs["c"][c_keys[j]];
             if (is_ball_hit_ball(a, b)) {
+                if (a.is_super_ball) {
+                    if (b.is_player) {
+                        objs["c"][c_keys[j]]["is_hit"] = true;
+                    }
+                    continue;
+                }
+                if (b.is_super_ball) {
+                    if (a.is_player) {
+                        objs["c"][c_keys[i]]["is_hit"] = true;
+                    }
+                    continue;
+                }
                 if (a.r > b.r * 1.1) {
                     a.r = Math.sqrt(a.r * a.r + b.r * b.r / 3.0);
                     if (a.is_player) {
