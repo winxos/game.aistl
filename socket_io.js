@@ -7,12 +7,18 @@ game.game_init();
 game.game_update();
 let logs = [];
 let old_obj = {};
+let old_user = {}
 
 function refresh_client() {
     let t = game.get_objs();
     if (!_de(old_obj, t)) {//deep equal
         io.sockets.emit('game.aistl', t);
         old_obj = _.cloneDeep(t); //deep clone
+    }
+    t = game.get_user();
+    if (!_de(old_user, t)) {//deep equal
+        io.sockets.emit('online_user', t);
+        old_user = _.cloneDeep(t); //deep clone
     }
     setTimeout(refresh_client, 50);
 }
@@ -26,19 +32,17 @@ function add_log(s) {
 }
 
 io.on('connect', function (socket) {
-    socket.emit('online_user', game.get_user());
     socket.emit('game.aistl', game.get_objs());
     socket.emit('logs', logs);
     socket.nickname = "";
     socket.on('login', function (data) {
-        if (!game.add_c(parseInt(Math.random() * 200 + 50), parseInt(Math.random() * 200 + 50), 20, data["name"])) {
+        if (!game.add_user(data["name"])) {
             socket.emit('login', 'false');
             socket.send("false");
         }
         else {
             socket.emit('login', 'true');
             socket.nickname = data["name"];
-            io.sockets.emit('online_user', game.get_user());
             add_log(data["name"] + " joined. IP:" + socket.handshake.headers['x-forwarded-for']);
         }
     });

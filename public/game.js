@@ -102,9 +102,25 @@ window.onload = function () {
     socket.on('game.aistl', function (res) {
         new_balls = res["c"];
     });
+    let menu_poped = false;
     socket.on('online_user', function (data) {
-        console.log("online" + data);
-        app.items = data;
+        keysSorted = Object.keys(data).sort(function (a, b) {
+            return data[b]["area"] - data[a]["area"];
+        });
+        console.log(keysSorted);
+        let show_data = [];
+        for (let u of keysSorted) {
+            show_data.push(u + " | " + data[u].score + " | " + parseInt(data[u].area) + " | " + data[u].is_alive);
+            if (u === nick && !data[u].is_alive && !menu_poped) {
+                menu_poped = true;
+                BootstrapDialog.show({
+                    size: BootstrapDialog.SIZE_SMALL,
+                    title: 'GAME OVER',
+                    message: '你挂了！'
+                });
+            }
+        }
+        app.items = show_data;
     });
     socket.on('logs', function (data) {
         console.log("logs" + data);
@@ -117,6 +133,8 @@ window.onload = function () {
     }
 
     function render() {
+        g.strokeStyle = "BLUE";
+        g.strokeRect(0, 0, w, h);
         for (let nb in new_balls) {
             if (!(nb in balls)) {
                 balls[nb] = {"x": 0, "y": 0};
@@ -129,8 +147,8 @@ window.onload = function () {
             g.arc(balls[nb].x, balls[nb].y, parseInt(new_balls[nb].r), 0, Math.PI * 2);
             g.fill();
             g.fillStyle = "white";
-            g.font = "20px Arial";
-            g.fillText(nb, balls[nb].x - parseInt(new_balls[nb].r) / 2, balls[nb].y + parseInt(new_balls[nb].r) / 2);
+            g.font = "15px Arial";
+            g.fillText(nb.substr(0, 2) + ".", balls[nb].x - parseInt(new_balls[nb].r) * 0.8, balls[nb].y + parseInt(new_balls[nb].r) / 2);
             g.closePath();
         }
     }
