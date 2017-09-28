@@ -27,12 +27,14 @@ function add_c(x, y, r, n, is_player = false) {
 function add_user(n) {
     if (n in objs["c"]) return false;
     let sz = 10;
-    while (!add_c(parseInt(Math.random() * 200 + 50),
-        parseInt(Math.random() * 200 + 50), sz, n, true)) {
-
+    for (let i = 0; i < 5; i++) {
+        if (add_c(parseInt(Math.random() * 200 + 50),
+                parseInt(Math.random() * 200 + 50), sz, n, true)) {
+            online_user[n] = {score: 0, area: sz * sz, is_alive: true};
+            return true
+        }
     }
-    online_user[n] = {score: 0, area: sz * sz, is_alive: true};
-    return true;
+    return false;
 }
 
 function get_objs() {
@@ -64,9 +66,8 @@ function remove_user(n) {
 function spawn_monster() {
     let left_monster = Object.keys(objs["c"]).length - Object.keys(online_user).length;
     if (left_monster < 10) {
-        while (!add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50),
-            parseInt(Math.random() * 15) + 2, Math.ceil(Math.random() * 10))) {
-        }
+        add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50),
+            parseInt(Math.random() * 15) + 2, Math.ceil(Math.random() * 10));
     }
 }
 
@@ -76,16 +77,16 @@ function control_user(n, e) {
     if (!(n in objs["c"])) return;
     switch (e) {
         case "left":
-            objs["c"][n].ax = -1.0 / objs["c"][n].r * 5;
+            objs["c"][n].ax = -1.0 / objs["c"][n].r * 4;
             break;
         case "right":
-            objs["c"][n].ax = 1.0 / objs["c"][n].r * 5;
+            objs["c"][n].ax = 1.0 / objs["c"][n].r * 4;
             break;
         case "up":
-            objs["c"][n].ay = -1.0 / objs["c"][n].r * 5;
+            objs["c"][n].ay = -1.0 / objs["c"][n].r * 4;
             break;
         case "down":
-            objs["c"][n].ay = 1.0 / objs["c"][n].r * 5;
+            objs["c"][n].ay = 1.0 / objs["c"][n].r * 4;
             break;
         case "release":
             objs["c"][n].ax = 0;
@@ -133,7 +134,7 @@ function game_update() {
             let a = objs["c"][c_keys[i]], b = objs["c"][c_keys[j]];
             if (is_ball_hit_ball(a, b)) {
                 if (a.r > b.r * 1.1) {
-                    a.r = Math.sqrt(a.r * a.r + b.r * b.r/5.0);
+                    a.r = Math.sqrt(a.r * a.r + b.r * b.r / 3.0);
                     if (a.is_player) {
                         online_user[c_keys[i]]["area"] = a.r * a.r;
                         online_user[c_keys[i]]["score"] += 1;
@@ -144,7 +145,7 @@ function game_update() {
                     delete objs["c"][c_keys[j]];
                 }
                 else if (b.r > a.r * 1.1) {
-                    b.r = Math.sqrt(a.r * a.r/5.0 + b.r * b.r);
+                    b.r = Math.sqrt(a.r * a.r / 3.0 + b.r * b.r);
                     delete objs["c"][c_keys[i]];
                     if (b.is_player) {
                         online_user[c_keys[j]]["area"] = b.r * b.r;
