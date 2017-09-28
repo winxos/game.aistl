@@ -67,7 +67,7 @@ function spawn_monster() {
     let left_monster = Object.keys(objs["c"]).length - Object.keys(online_user).length;
     if (left_monster < 10) {
         add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50),
-            parseInt(Math.random() * 15) + 2, Math.ceil(Math.random() * 10));
+            parseInt(Math.random() * 10) + 4, Math.ceil(Math.random() * 10));
     }
 }
 
