@@ -71,7 +71,7 @@ function spawn_monster() {
     }
 }
 
-setInterval(spawn_monster, 5000);
+setInterval(spawn_monster, 1000);
 
 function control_user(n, e) {
     if (!(n in objs["c"])) return;
