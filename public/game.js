@@ -108,7 +108,6 @@ window.onload = function () {
         keysSorted = Object.keys(data).sort(function (a, b) {
             return data[b]["area"] - data[a]["area"];
         });
-        console.log(keysSorted);
         let show_data = [];
         for (let u of keysSorted) {
             show_data.push(u + " | " + data[u].score + " | " + parseInt(data[u].area) + " | " + data[u].is_alive);

@@ -33,6 +33,7 @@ function add_log(s) {
 
 io.on('connect', function (socket) {
     socket.emit('game.aistl', game.get_objs());
+    socket.emit('online_user', game.get_user());
     socket.emit('logs', logs);
     socket.nickname = "";
     socket.on('login', function (data) {
