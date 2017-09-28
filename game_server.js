@@ -2,7 +2,7 @@ let objs = {};
 let online_user = {};
 
 function add_c(x, y, r, n, is_player = false, is_super_ball = false,
-               vx = parseInt(Math.random() * 6 - 3), vy = parseInt(Math.random() * 6 - 3)) {
+               vx = parseInt(Math.random() * 4 - 2), vy = parseInt(Math.random() * 4 - 2)) {
     if (n in objs["c"]) return false;
     let tmp = {
         "x": x,
@@ -12,17 +12,12 @@ function add_c(x, y, r, n, is_player = false, is_super_ball = false,
         "vy": vy,
         "ax": 0,
         "ay": 0,
-        "fr": 0.001,
+        "fr": 0.0001,
         "is_hit": false,
         "is_player": is_player,
         "is_super_ball": is_super_ball,
         "c": "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")"
     };
-    for (let b of Object.keys(objs["c"])) {
-        if (is_ball_hit_ball(objs["c"][b], tmp)) {
-            return false;
-        }
-    }
     if (is_super_ball) {
         tmp.fr = 0;
         tmp.vx = 3;
@@ -79,13 +74,13 @@ function remove_user(n) {
 
 function spawn_monster() {
     let left_monster = Object.keys(objs["c"]).length - Object.keys(online_user).length;
-    if (left_monster < 10) {
+    if (left_monster < 20) {
         add_c(parseInt(Math.random() * 400 + 50), parseInt(Math.random() * 300 + 50),
-            parseInt(Math.random() * 10) + 4, Math.ceil(Math.random() * 10));
+            parseInt(Math.random() * 10) + 3, Math.ceil(Math.random() * 20));
     }
 }
 
-setInterval(spawn_monster, 1000);
+setInterval(spawn_monster, 500);
 
 function control_user(n, e) {
     if (!(n in objs["c"])) return;
@@ -140,13 +135,27 @@ function body_update(b) {
 
 }
 
+function get_safe_place(r) {
+    let tmp = {};
+    for (let i = 0; i < 10; i++) {
+        tmp = {x: Math.random() * 400 + 40, y: Math.random() * 300 + 50, r: r};
+        for (let b of Object.keys(objs["c"])) {
+            if (!is_ball_hit_ball(objs["c"][b], tmp)) {
+                break;
+            }
+        }
+    }
+    return tmp;
+}
+
 function born(key) {
     b = objs["c"][key];
     b.is_hit = false;
     if (b.is_player) {
         b.r = b.r / 1.4;
-        b.x = b.x + Math.random() * b.r;
-        b.y = b.y + Math.random() * b.r;
+        let t = get_safe_place(b.r);
+        b.x = t.x;
+        b.y = t.y;
         b.vx = 0;
         b.vy = 0;
         online_user[key]["area"] = b.r * b.r;
@@ -155,26 +164,17 @@ function born(key) {
             delete b;
             return;
         }
-        for (let i = 0; i < 10; i++) {
-            if (add_c(b.x + Math.random() * b.r * 4, b.y + Math.random() * b.r * 4, b.r / 1.4, key + "2", 0, 0)) {
-                break;
-            }
-        }
+        t = get_safe_place(b.r);
+        add_c(t.x, t.y, t.r, key + "2", 0, 0);
+
     }
     else {
         if (b.r > 5) {
-            for (let i = 0; i < 10; i++) {
-                if (add_c(b.x + Math.random() * b.r * 4, b.y + Math.random() * b.r * 4, b.r / 1.4, key + "1", 0, 0)) {
-                    break;
-                }
-            }
-            for (let i = 0; i < 10; i++) {
-                if (add_c(b.x + Math.random() * b.r * 4, b.y + Math.random() * b.r * 4, b.r / 1.4, key + "2", 0, 0)) {
-                    break;
-                }
-            }
+            let t = get_safe_place(b.r / 1.4);
+            add_c(t.x, t.y, t.r, key + "1", 0, 0);
+            t = get_safe_place(b.r / 1.4);
+            add_c(t.x, t.y, t.r, key + "2", 0, 0);
         }
-
         delete b;
     }
 }
